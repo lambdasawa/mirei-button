@@ -24,6 +24,10 @@ export class MireiButtonStack extends cdk.Stack {
       }
     );
 
+    new CfnOutput(this, "BucketName", {
+      exportName: "BucketName",
+      value: bucket.bucketName
+    });
     new CfnOutput(this, "PublicURL", {
       exportName: "PublicURL",
       value: `https://${distribution.domainName}`
