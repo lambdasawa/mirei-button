@@ -1,6 +1,7 @@
 .PHONY: \
 	deploy \
-	destroy
+	destroy \
+	lint
 
 deploy:
 	cd infra &&\
@@ -9,3 +10,7 @@ deploy:
 
 destroy:
 	cd infra && yarn cdk destroy
+
+lint:
+	lefthook install
+	lefthook run pre-commit
