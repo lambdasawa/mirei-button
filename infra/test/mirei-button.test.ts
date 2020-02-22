@@ -4,12 +4,12 @@ import {
   MatchStyle
 } from "@aws-cdk/assert";
 import * as cdk from "@aws-cdk/core";
-import Infra = require("../lib/infra-stack");
+import MireiButton = require("../lib/mirei-button-stack");
 
 test("Empty Stack", () => {
   const app = new cdk.App();
   // WHEN
-  const stack = new Infra.InfraStack(app, "MyTestStack");
+  const stack = new MireiButton.MireiButtonStack(app, "MyTestStack");
   // THEN
   expectCDK(stack).to(
     matchTemplate(

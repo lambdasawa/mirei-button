@@ -1,8 +1,8 @@
 {
-  "name": "infra",
+  "name": "mirei-button-infra",
   "version": "0.1.0",
   "bin": {
-    "infra": "bin/infra.js"
+    "infra": "bin/mirei-button.js"
   },
   "scripts": {
     "build": "tsc",
