@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  trimmer:
+    build: ./trimmer
+    ports:
+      - "3011:3011"
+    environment:
+      MB_YOUTUBEDL_BIN_PATH: /usr/local/bin/youtube-dl
+      MB_FFMPEG_BIN_PATH: /usr/bin/ffmpeg
+      MB_SOX_BIN_PATH: /usr/bin/sox

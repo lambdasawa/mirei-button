@@ -1,6 +1,7 @@
 .PHONY: \
 	deploy \
 	destroy \
+	run \
 	lint
 
 deploy:
@@ -10,6 +11,9 @@ deploy:
 
 destroy:
 	cd infra && yarn cdk destroy
+
+run:
+	docker-compose up
 
 lint:
 	lefthook install
