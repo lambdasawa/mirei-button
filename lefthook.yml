@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    infra-linter:
+      root: "infra/"
+      glob: "**.{js,ts,json}"
+      run: yarn lint
