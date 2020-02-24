@@ -8,13 +8,22 @@ Start server.
 $ make run
 ```
 
-Send request.
+Get video.
 
 ```sh
 $ http -v \
-    -o kirinuki.mp3 \
-    :3011/kirinuki \
-    url=='https://www.youtube.com/watch?v=p5BzZNH2mkU' \
-    start-ms==10000 \
-    duration-ms==5000
+      --download \
+      :3011/video \
+      url=='https://www.youtube.com/watch?v=p5BzZNH2mkU'
+```
+
+Get sound.
+
+```sh
+$ http -v \
+      --download \
+      :3011/sound \
+      url=='https://www.youtube.com/watch?v=p5BzZNH2mkU' \
+      start-ms==10000 \
+      duration-ms==5000
 ```

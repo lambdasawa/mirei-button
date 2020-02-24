@@ -1,10 +1,9 @@
-package kirinuki
+package sound
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
-	"mb-trimmer/trim"
+	"mb-trimmer/command"
 	"net/http"
 	"os"
 
@@ -25,7 +24,7 @@ func Get(c echo.Context) error {
 		return fmt.Errorf("read request: %v", err)
 	}
 
-	trimmer := &trim.Trimmer{
+	cmd := &command.Command{
 		DataDirPath:      "./tmp/",
 		YouTubeDLBinPath: os.Getenv("MB_YOUTUBEDL_BIN_PATH"),
 		FFmpegBinPath:    os.Getenv("MB_FFMPEG_BIN_PATH"),
@@ -34,14 +33,9 @@ func Get(c echo.Context) error {
 		ErrLog:           new(bytes.Buffer),
 	}
 
-	soundPath, err := trimmer.Trim(req.URL, req.StartMS, req.DurationMS)
+	blob, err := cmd.TrimSound(req.URL, req.StartMS, req.DurationMS)
 	if err != nil {
 		return fmt.Errorf("trim sound: %v", err)
-	}
-
-	blob, err := ioutil.ReadFile(soundPath)
-	if err != nil {
-		return fmt.Errorf("read trimmed sound: %v", err)
 	}
 
 	return c.Blob(http.StatusOK, "audio/mpeg", blob)
