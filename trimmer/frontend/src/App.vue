@@ -5,7 +5,10 @@
 
       <v-spacer />
 
-      <v-btn icon href="/twitter/login">
+      <v-btn icon href="/twitter/sign-in">
+        <v-icon>mdi-twitter</v-icon>
+      </v-btn>
+      <v-btn icon href="/twitter/sign-out">
         <v-icon>mdi-twitter</v-icon>
       </v-btn>
     </v-app-bar>

@@ -1,5 +1,9 @@
 <template>
   <v-container id="trimmer">
+    <div class="text-center">
+      <v-icon>mdi-twitter</v-icon>
+      <span>@{{ twitterStatus.status }}</span>
+    </div>
     <div>
       <v-text-field type="text" v-model="rawVideoUrl" />
     </div>
@@ -72,6 +76,8 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Trimmer extends Vue {
   readonly origin = "http://localhost:3011";
 
+  twitterStatus: { status: string } = { status: "" };
+
   rawVideoUrl = "https://www.youtube.com/watch?v=p5BzZNH2mkU";
   startPosition = 0;
   endPosition = 0;
@@ -81,6 +87,21 @@ export default class Trimmer extends Vue {
   $refs!: {
     player: HTMLVideoElement;
   };
+
+  async mounted() {
+    console.log({ msg: "mounted" });
+
+    await fetch("/twitter/status")
+      .then(async response => {
+        const json = await response.json();
+        console.log({ status: json });
+
+        this.twitterStatus = json;
+      })
+      .catch(e => {
+        console.error({ error: e });
+      });
+  }
 
   getVideoUrl() {
     const videoUrl = encodeURIComponent(this.rawVideoUrl);
