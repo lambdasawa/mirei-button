@@ -77,7 +77,7 @@ func (c *Command) downloadYouTube(videoURL string) (soundPath string, err error)
 			"mp3",
 			videoURL,
 			"--output",
-			filepath.Join(filepath.Dir(originalPath), "original.(exts)"),
+			filepath.Join(filepath.Dir(originalPath), "original.%(ext)s"),
 		},
 		c.Log,
 		c.ErrLog,
