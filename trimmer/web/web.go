@@ -14,6 +14,8 @@ func Start() error {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Static("/assets", "frontend/dist")
+	e.Static("/", "frontend/dist/index.html")
 	e.GET("video", video.Get)
 	e.GET("sound", sound.Get)
 
