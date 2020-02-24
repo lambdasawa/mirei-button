@@ -3,6 +3,7 @@ package register
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -56,6 +57,62 @@ func Register(c echo.Context) error {
 		return fmt.Errorf("read request: %v", err)
 	}
 
+	if err := register(req); err != nil {
+		return fmt.Errorf("register: %v", err)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{})
+}
+
+func BulkRegister(c echo.Context) error {
+	tsvReader := csv.NewReader(c.Request().Body)
+	tsvReader.Comma = '\t'
+
+	records, err := tsvReader.ReadAll()
+	if err != nil {
+		return err
+	}
+
+	for _, record := range records {
+		log.Println(record)
+
+		url := record[0]
+
+		start := record[1]
+		t, err := time.Parse("15:04:05.999999999", start)
+		if err != nil {
+			return fmt.Errorf("parse start: %v", err)
+		}
+		startMS := int64(0)
+		startMS += int64(t.Hour() * 60 * 60 * 1000)
+		startMS += int64(t.Minute() * 60 * 1000)
+		startMS += int64(t.Second() * 1000)
+		startMS += int64(t.Nanosecond() / 1000 / 1000)
+
+		duration := record[2]
+		durationMS, err := time.ParseDuration(duration)
+		if err != nil {
+			return fmt.Errorf("parse duration: %v", err)
+		}
+
+		text := record[3]
+
+		req := Req{
+			URL:        url,
+			StartMS:    startMS,
+			DurationMS: durationMS.Milliseconds(),
+			Text:       text,
+		}
+		log.Println(req)
+		if err := register(req); err != nil {
+			return fmt.Errorf("regsiter: %v", err)
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{})
+}
+
+func register(req Req) error {
 	// new s3 service
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("ap-northeast-1"),
@@ -109,9 +166,11 @@ func Register(c echo.Context) error {
 		return fmt.Errorf("put mp3 object: %v", err)
 	}
 
+	// todo invalidate cache
+
 	// todo post tweet
 
-	return c.JSON(http.StatusOK, map[string]interface{}{})
+	return nil
 }
 
 func createNewMetadata(s3Service *s3.S3, req Req) (Metadata, error) {

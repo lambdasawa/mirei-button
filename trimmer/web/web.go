@@ -29,6 +29,7 @@ func Start() error {
 	e.GET("/video", video.Get)
 	e.GET("/sound", sound.Get)
 	e.POST("/register", register.Register)
+	e.POST("/bulk-register", register.BulkRegister)
 
 	return e.Start(":3011")
 }
