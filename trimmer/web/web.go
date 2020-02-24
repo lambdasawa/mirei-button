@@ -1,6 +1,7 @@
 package web
 
 import (
+	"mb-trimmer/web/endpoint/register"
 	"mb-trimmer/web/endpoint/sound"
 	"mb-trimmer/web/endpoint/twitter"
 	"mb-trimmer/web/endpoint/video"
@@ -27,6 +28,7 @@ func Start() error {
 	e.GET("/twitter/sign-out", twitter.SignOut)
 	e.GET("/video", video.Get)
 	e.GET("/sound", sound.Get)
+	e.POST("/register", register.Register)
 
 	return e.Start(":3011")
 }

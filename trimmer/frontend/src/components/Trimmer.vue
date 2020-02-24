@@ -20,7 +20,6 @@
           </div>
           <div>
             <v-btn class="ma-2" @click="preview">プレビュー</v-btn>
-            <v-btn class="ma-2" @save="save">保存</v-btn>
           </div>
         </div>
         <div class="ma-4">範囲 : {{ getSpan() }}</div>
@@ -54,6 +53,12 @@
             <v-btn class="ma-1" @click="updateEndPos(100)">+0.1s</v-btn>
           </div>
         </div>
+        <div class="mb-4">
+          <div>
+            <v-text-field type="text" v-model="text" placeholder="ボタンテキスト..." />
+            <v-btn class="ma-2" @click="save">保存</v-btn>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -79,6 +84,9 @@ export default class Trimmer extends Vue {
   twitterStatus: { status: string } = { status: "" };
 
   rawVideoUrl = "https://www.youtube.com/watch?v=p5BzZNH2mkU";
+
+  text = "";
+
   startPosition = 0;
   endPosition = 0;
 
@@ -167,8 +175,26 @@ export default class Trimmer extends Vue {
     this.audio.play();
   }
 
-  save() {
-    console.log({ msg: "save" });
+  async save() {
+    const fetchURL = "/register";
+    const fetchOption: RequestInit = {
+      method: "POST",
+      cache: "no-cache",
+      credentials: "same-origin", // include, same-origin, *omit
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+        url: this.rawVideoUrl,
+        startMS: this.startPosition,
+        durationMS: this.endPosition - this.startPosition,
+        text: this.text,
+        tags: ""
+      })
+    };
+    console.log({ msg: "save", fetchURL, fetchOption });
+
+    await fetch(fetchURL, fetchOption);
   }
 
   updateStartPos(x: number) {
