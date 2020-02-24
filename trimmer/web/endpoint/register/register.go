@@ -10,7 +10,6 @@ import (
 	"log"
 	"mb-trimmer/command"
 	"net/http"
-	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -210,7 +209,7 @@ func createNewMetadata(s3Service *s3.S3, req Req) (Metadata, error) {
 	}
 
 	md.Items = append(md.Items, MetadataItem{
-		URL:         buildURL(req),
+		URL:         buildKey(req),
 		OriginalURL: req.URL,
 		StartMS:     req.StartMS,
 		DurationMS:  req.DurationMS,
@@ -222,14 +221,9 @@ func createNewMetadata(s3Service *s3.S3, req Req) (Metadata, error) {
 	return md, nil
 }
 
-func buildURL(req Req) string {
-	u, _ := url.Parse(os.Getenv("MB_ORIGIN"))
-	u.Path = buildKey(req)
-	return u.String()
-}
-
 func buildKey(req Req) string {
 	return path.Join(
+		"/",
 		base64.URLEncoding.EncodeToString([]byte(req.URL)),
 		fmt.Sprint(req.StartMS),
 		fmt.Sprint(req.DurationMS),
