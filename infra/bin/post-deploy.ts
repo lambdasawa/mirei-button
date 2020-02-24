@@ -3,6 +3,11 @@ import * as fs from "fs";
 import * as path from "path";
 import * as mimeTypes from "mime-types";
 
+const getStagePrefix = () => {
+  const stage = String(process.env.MB_STAGE);
+  return stage[0].toUpperCase() + stage.slice(1).toLowerCase();
+};
+
 const findStack = (): Promise<aws.CloudFormation.Stack> => {
   return new aws.CloudFormation()
     .describeStacks({
@@ -13,16 +18,13 @@ const findStack = (): Promise<aws.CloudFormation.Stack> => {
 };
 
 const findBucketName = (stack: aws.CloudFormation.Stack): string => {
-  return (
-    stack.Outputs?.find(o => o.OutputKey === "BucketName")?.OutputValue || ""
-  );
+  const key = getStagePrefix() + "BucketName";
+  return stack.Outputs?.find(o => o.OutputKey === key)?.OutputValue || "";
 };
 
 const findDistributionID = (stack: aws.CloudFormation.Stack): string => {
-  return (
-    stack.Outputs?.find(o => o.OutputKey === "DistributionID")?.OutputValue ||
-    ""
-  );
+  const key = getStagePrefix() + "DistributionID";
+  return stack.Outputs?.find(o => o.OutputKey === key)?.OutputValue || "";
 };
 
 const putObject = (

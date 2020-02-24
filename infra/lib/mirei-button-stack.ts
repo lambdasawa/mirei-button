@@ -24,16 +24,23 @@ export class MireiButtonStack extends cdk.Stack {
       }
     );
 
+    const getStage = () => {
+      const stage = String(process.env.MB_STAGE);
+      const capitalStage =
+        stage[0].toUpperCase() + stage.slice(1).toLowerCase();
+      return capitalStage;
+    };
+
     new CfnOutput(this, "BucketName", {
-      exportName: "BucketName",
+      exportName: getStage() + "BucketName",
       value: bucket.bucketName
     });
     new CfnOutput(this, "DistributionID", {
-      exportName: "DistributionID",
+      exportName: getStage() + "DistributionID",
       value: distribution.distributionId
     });
     new CfnOutput(this, "PublicURL", {
-      exportName: "PublicURL",
+      exportName: getStage() + "PublicURL",
       value: `https://${distribution.domainName}`
     });
   }
