@@ -15,6 +15,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/service/cloudfront"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -165,7 +167,11 @@ func register(req Req) error {
 		return fmt.Errorf("put mp3 object: %v", err)
 	}
 
-	// todo invalidate cache
+	// invalidate cache
+	cf := cloudfront.New(sess)
+	if err := invalidateCache(cf); err != nil {
+		return fmt.Errorf("invalidate cache: %v", err)
+	}
 
 	// todo post tweet
 
@@ -246,4 +252,29 @@ func createMP3(req Req) ([]byte, error) {
 	}
 
 	return mp3, nil
+}
+
+func invalidateCache(cfService *cloudfront.CloudFront) error {
+	paths := []*string{
+		aws.String("/index.html"),
+		aws.String("/metadata.json"),
+		aws.String("/favicon.ico"),
+		aws.String("/js/*"),
+		aws.String("/css/*"),
+		aws.String("/img/*"),
+	}
+	if _, err := cfService.CreateInvalidation(&cloudfront.CreateInvalidationInput{
+		DistributionId: aws.String(os.Getenv("MB_DISTRIBUTION_ID")),
+		InvalidationBatch: &cloudfront.InvalidationBatch{
+			CallerReference: aws.String(fmt.Sprint(time.Now().UnixNano() / 1000 / 1000)),
+			Paths: &cloudfront.Paths{
+				Quantity: aws.Int64(int64(len(paths))),
+				Items:    paths,
+			},
+		},
+	}); err != nil {
+		return fmt.Errorf("create invalidation: %v", err)
+	}
+
+	return nil
 }
