@@ -79,8 +79,6 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Trimmer extends Vue {
-  readonly origin = "http://localhost:3011";
-
   twitterStatus: { status: string } = { status: "" };
 
   rawVideoUrl = "https://www.youtube.com/watch?v=p5BzZNH2mkU";
@@ -106,7 +104,7 @@ export default class Trimmer extends Vue {
 
   getVideoUrl() {
     const videoUrl = encodeURIComponent(this.rawVideoUrl);
-    return `${this.origin}/video?url=${videoUrl}`;
+    return `/video?url=${videoUrl}`;
   }
 
   getAudioUrl() {
@@ -115,7 +113,7 @@ export default class Trimmer extends Vue {
     const duration = this.endPosition - this.startPosition;
 
     const videoUrl = encodeURIComponent(this.rawVideoUrl);
-    const url = `${this.origin}/sound?url=${videoUrl}&start-ms=${start}&duration-ms=${duration}`;
+    const url = `/sound?url=${videoUrl}&start-ms=${start}&duration-ms=${duration}`;
 
     return url;
   }
