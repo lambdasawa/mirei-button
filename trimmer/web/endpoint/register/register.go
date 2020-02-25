@@ -15,12 +15,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/cloudfront"
+	"github.com/garyburd/go-oauth/oauth"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudfront"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
+	echoSession "github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
@@ -58,7 +62,7 @@ func Register(c echo.Context) error {
 		return fmt.Errorf("read request: %v", err)
 	}
 
-	if err := register(req); err != nil {
+	if err := register(c, req); err != nil {
 		return fmt.Errorf("register: %v", err)
 	}
 
@@ -105,7 +109,7 @@ func BulkRegister(c echo.Context) error {
 			Text:       text,
 		}
 		log.Println(req)
-		if err := register(req); err != nil {
+		if err := register(c, req); err != nil {
 			return fmt.Errorf("regsiter: %v", err)
 		}
 	}
@@ -113,7 +117,7 @@ func BulkRegister(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{})
 }
 
-func register(req Req) error {
+func register(c echo.Context, req Req) error {
 	// new s3 service
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("ap-northeast-1"),
@@ -173,7 +177,10 @@ func register(req Req) error {
 		return fmt.Errorf("invalidate cache: %v", err)
 	}
 
-	// todo post tweet
+	// post tweet
+	if err := postTweet(c, req); err != nil {
+		return fmt.Errorf("post tweet: %v", err)
+	}
 
 	return nil
 }
@@ -275,6 +282,33 @@ func invalidateCache(cfService *cloudfront.CloudFront) error {
 	}); err != nil {
 		return fmt.Errorf("create invalidation: %v", err)
 	}
+
+	return nil
+}
+
+func postTweet(c echo.Context, req Req) error {
+	// todo refactor
+
+	sess, _ := echoSession.Get("session", c)
+	screenName := sess.Values["screen-name"].(string)
+	if screenName != os.Getenv("MB_TWITTER_SCREENNAME") {
+		log.Println("skip twitter")
+		return nil
+	}
+
+	cred := sess.Values["token-cred"].(*oauth.Credentials)
+
+	twitterClient := twitter.NewClient(oauth1.NewConfig(
+		os.Getenv("MB_TWITTER_CONSUMER_KEY"),
+		os.Getenv("MB_TWITTER_CONSUMER_SECRET"),
+	).Client(oauth1.NoContext, oauth1.NewToken(cred.Token, cred.Secret)))
+
+	text := fmt.Sprintf("「%s」を追加しました。", req.Text)
+	_, resp, err := twitterClient.Statuses.Update(text, nil)
+	if err != nil {
+		return fmt.Errorf("post tweet: %v", err)
+	}
+	defer resp.Body.Close()
 
 	return nil
 }
