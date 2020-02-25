@@ -97,18 +97,11 @@ export default class Trimmer extends Vue {
   };
 
   async mounted() {
-    console.log({ msg: "mounted" });
+    await fetch("/twitter/status").then(async response => {
+      const json = await response.json();
 
-    await fetch("/twitter/status")
-      .then(async response => {
-        const json = await response.json();
-        console.log({ status: json });
-
-        this.twitterStatus = json;
-      })
-      .catch(e => {
-        console.error({ error: e });
-      });
+      this.twitterStatus = json;
+    });
   }
 
   getVideoUrl() {
@@ -150,8 +143,6 @@ export default class Trimmer extends Vue {
 
     const currentTime = player.currentTime;
 
-    console.log({ msg: "trim", currentTime });
-
     this.endPosition = Math.floor(currentTime * 1000);
     this.startPosition = Math.floor(currentTime * 1000 - 5 * 1000);
 
@@ -165,11 +156,6 @@ export default class Trimmer extends Vue {
     this.audio.pause();
 
     const url = this.getAudioUrl();
-
-    console.log({
-      msg: "preview",
-      url: url
-    });
 
     this.audio = new Audio(url);
     this.audio.play();
@@ -192,7 +178,6 @@ export default class Trimmer extends Vue {
         tags: ""
       })
     };
-    console.log({ msg: "save", fetchURL, fetchOption });
 
     await fetch(fetchURL, fetchOption);
   }
