@@ -118,6 +118,10 @@ func BulkRegister(c echo.Context) error {
 }
 
 func register(c echo.Context, req Req) error {
+	if err := checkUser(c); err != nil {
+		return fmt.Errorf("check user: %v", err)
+	}
+
 	// new s3 service
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("ap-northeast-1"),
@@ -180,6 +184,16 @@ func register(c echo.Context, req Req) error {
 	// post tweet
 	if err := postTweet(c, req); err != nil {
 		return fmt.Errorf("post tweet: %v", err)
+	}
+
+	return nil
+}
+
+func checkUser(c echo.Context) error {
+	sess, _ := echoSession.Get("session", c)
+	screenName := sess.Values["screen-name"].(string)
+	if screenName != os.Getenv("MB_TWITTER_SCREENNAME") {
+		return fmt.Errorf("invalid user")
 	}
 
 	return nil
@@ -290,12 +304,6 @@ func postTweet(c echo.Context, req Req) error {
 	// todo refactor
 
 	sess, _ := echoSession.Get("session", c)
-	screenName := sess.Values["screen-name"].(string)
-	if screenName != os.Getenv("MB_TWITTER_SCREENNAME") {
-		log.Println("skip twitter")
-		return nil
-	}
-
 	cred := sess.Values["token-cred"].(*oauth.Credentials)
 
 	twitterClient := twitter.NewClient(oauth1.NewConfig(
