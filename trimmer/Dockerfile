@@ -17,6 +17,7 @@ ADD . /opt/mb-trimmer
 ENV PATH "$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 RUN cd /opt/mb-trimmer/frontend &&\
+  /root/.yarn/bin/yarn &&\
   /root/.yarn/bin/yarn build &&\
   cd /opt/mb-trimmer &&\
   go build -o mb-trimmer main.go
