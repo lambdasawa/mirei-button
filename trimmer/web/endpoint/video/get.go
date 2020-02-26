@@ -6,6 +6,7 @@ import (
 	"mb-trimmer/command"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -36,5 +37,9 @@ func Get(c echo.Context) error {
 		return fmt.Errorf("trim sound: %v", err)
 	}
 
-	return c.Blob(http.StatusOK, "video/mp4", blob)
+	readSeeker := bytes.NewReader(blob)
+
+	http.ServeContent(c.Response(), c.Request(), "original.mp4", time.Now(), readSeeker)
+
+	return nil
 }
