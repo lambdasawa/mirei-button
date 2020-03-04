@@ -32,14 +32,13 @@ func Get(c echo.Context) error {
 		ErrLog:           new(bytes.Buffer),
 	}
 
-	blob, err := cmd.DownloadVideo(req.URL)
+	file, err := cmd.DownloadVideo(req.URL)
 	if err != nil {
 		return fmt.Errorf("trim sound: %v", err)
 	}
+	defer file.Close()
 
-	readSeeker := bytes.NewReader(blob)
-
-	http.ServeContent(c.Response(), c.Request(), "original.mp4", time.Now(), readSeeker)
+	http.ServeContent(c.Response(), c.Request(), "original.mp4", time.Now(), file)
 
 	return nil
 }

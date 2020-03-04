@@ -3,13 +3,12 @@ package command
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-func (c *Command) DownloadVideo(videoURL string) ([]byte, error) {
+func (c *Command) DownloadVideo(videoURL string) (*os.File, error) {
 	defer func() {
 		log.Printf("trim stdout: %v", c.Log.String())
 		log.Printf("trim stderr: %v", c.ErrLog.String())
@@ -22,12 +21,12 @@ func (c *Command) DownloadVideo(videoURL string) ([]byte, error) {
 
 	log.Println("read outputpath", outputPath)
 
-	blob, err := ioutil.ReadFile(outputPath)
+	file, err := os.Open(outputPath)
 	if err != nil {
-		return nil, fmt.Errorf("read video: %v", err)
+		return nil, fmt.Errorf("open video: %v", err)
 	}
 
-	return blob, nil
+	return file, nil
 }
 
 func (c *Command) downloadVideo(videoURL string) (string, error) {
