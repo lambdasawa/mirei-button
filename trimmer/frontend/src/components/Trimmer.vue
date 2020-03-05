@@ -6,11 +6,12 @@
     </div>
     <div>
       <v-text-field type="text" v-model="rawVideoUrl" />
+      <v-btn @click="setVideoUrl">読み込み</v-btn>
     </div>
     <v-row class="text-center">
       <v-col cols="12" lg="8" xs="12">
         <dir id="player-wrapper">
-          <video id="player" ref="player" :src="getVideoUrl()" controls></video>
+          <video id="player" ref="player" :src="videoUrl" controls></video>
         </dir>
       </v-col>
       <v-col cols="12" lg="4" mxs="12">
@@ -82,6 +83,7 @@ export default class Trimmer extends Vue {
   twitterStatus: { status: string } = { status: "" };
 
   rawVideoUrl = "https://www.youtube.com/watch?v=p5BzZNH2mkU";
+  videoUrl = "";
 
   text = "";
 
@@ -95,6 +97,8 @@ export default class Trimmer extends Vue {
   };
 
   async mounted() {
+    this.setVideoUrl();
+
     await fetch("/twitter/status").then(async response => {
       const json = await response.json();
 
@@ -102,9 +106,9 @@ export default class Trimmer extends Vue {
     });
   }
 
-  getVideoUrl() {
+  setVideoUrl() {
     const videoUrl = encodeURIComponent(this.rawVideoUrl);
-    return `/video?url=${videoUrl}`;
+    this.videoUrl = `/video?url=${videoUrl}`;
   }
 
   getAudioUrl() {
@@ -112,8 +116,7 @@ export default class Trimmer extends Vue {
 
     const duration = this.endPosition - this.startPosition;
 
-    const videoUrl = encodeURIComponent(this.rawVideoUrl);
-    const url = `/sound?url=${videoUrl}&start-ms=${start}&duration-ms=${duration}`;
+    const url = `/sound?url=${this.videoUrl}&start-ms=${start}&duration-ms=${duration}`;
 
     return url;
   }
