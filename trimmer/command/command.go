@@ -34,7 +34,7 @@ func parseURL(videoURL string) (serviceID string, err error) {
 	}
 
 	switch {
-	case strings.Contains(u.Host, "youtube.com"):
+	case strings.Contains(u.Host, "youtube.com") || strings.Contains(u.Host, "youtu.be"):
 		return ServiceIDYouTube, nil
 
 	case strings.Contains(u.Host, "twitcasting.tv"):
