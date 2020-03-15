@@ -116,7 +116,7 @@ export default class Trimmer extends Vue {
 
     const duration = this.endPosition - this.startPosition;
 
-    const url = `/sound?url=${this.videoUrl}&start-ms=${start}&duration-ms=${duration}`;
+    const url = `/sound?url=${this.rawVideoUrl}&start-ms=${start}&duration-ms=${duration}`;
 
     return url;
   }
