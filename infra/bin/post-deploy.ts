@@ -19,12 +19,12 @@ const findStack = (): Promise<aws.CloudFormation.Stack> => {
 
 const findBucketName = (stack: aws.CloudFormation.Stack): string => {
   const key = getStagePrefix() + "BucketName";
-  return stack.Outputs?.find(o => o.OutputKey === key)?.OutputValue || "";
+  return stack.Outputs?.find(o => o.ExportName === key)?.OutputValue || "";
 };
 
 const findDistributionID = (stack: aws.CloudFormation.Stack): string => {
   const key = getStagePrefix() + "DistributionID";
-  return stack.Outputs?.find(o => o.OutputKey === key)?.OutputValue || "";
+  return stack.Outputs?.find(o => o.ExportName === key)?.OutputValue || "";
 };
 
 const putObject = (
