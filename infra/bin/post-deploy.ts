@@ -3,6 +3,12 @@ import * as fs from "fs";
 import * as path from "path";
 import * as mimeTypes from "mime-types";
 
+/**
+ * Put ../public objects to S3 Bucket and create Cloudfront invalidation.
+ *
+ * TODO: Use @aws-cdk/aws-s3-deployment.BucketDeployment
+ */
+
 const getStagePrefix = () => {
   const stage = String(process.env.MB_STAGE);
   return stage[0].toUpperCase() + stage.slice(1).toLowerCase();
