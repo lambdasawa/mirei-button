@@ -9,5 +9,5 @@ require (
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17
 	github.com/gorilla/sessions v1.2.0
 	github.com/labstack/echo-contrib v0.8.0
-	github.com/labstack/echo/v4 v4.1.14
+	github.com/labstack/echo/v4 v4.9.0
 )
