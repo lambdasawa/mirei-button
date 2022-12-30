@@ -3,7 +3,7 @@ module mb-trimmer
 go 1.13
 
 require (
-	github.com/aws/aws-sdk-go v1.29.8
+	github.com/aws/aws-sdk-go v1.33.0
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17
